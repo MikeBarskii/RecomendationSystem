@@ -23,11 +23,11 @@ public class FirstRatings {
         Set<Rater> raters = loadRaters(filename);
         System.out.println("Total number of raters: " + raters.size());
 
-        Set<String> movies = collectMoviesIdFromRaters(raters);
+        Set<Long> movies = collectMoviesIdFromRaters(raters);
         System.out.println("Movie Ids with ratings: " + movies);
     }
 
-    public void testGetRatingsByMovieId(String filename, String movieId) {
+    public void testGetRatingsByMovieId(String filename, long movieId) {
         Set<Rater> raters = loadRaters(filename);
         System.out.println("Total number of raters: " + raters.size());
 
@@ -83,19 +83,19 @@ public class FirstRatings {
         System.out.println("Total number of raters: " + raters.size());
     }
 
-    private Set<Movie> loadMovies(String filename) {
+    public Set<Movie> loadMovies(String filename) {
         CSVParser csvParser = getCsvParser(filename);
 
         Set<Movie> movies = new HashSet<>();
         for (CSVRecord record : csvParser) {
-            Movie movie = new Movie(record.get("id"), record.get("title"), record.get("year"), record.get("genre"), record.get("director"),
+            Movie movie = new Movie(Long.parseLong(record.get("id")), record.get("title"), record.get("year"), record.get("genre"), record.get("director"),
                     record.get("country"), record.get("poster"), Integer.parseInt(record.get("minutes")));
             movies.add(movie);
         }
         return movies;
     }
 
-    private Set<Rater> loadRaters(String filename) {
+    public Set<Rater> loadRaters(String filename) {
         CSVParser csvParser = getCsvParser(filename);
 
         Set<Rater> raters = new HashSet<>();
@@ -107,7 +107,7 @@ public class FirstRatings {
                 raters.add(rater);
             }
 
-            rater.addRating(record.get("movie_id"), Double.parseDouble(record.get("rating")));
+            rater.addRating(Long.parseLong(record.get("movie_id")), Double.parseDouble(record.get("rating")));
         }
         return raters;
     }
@@ -131,17 +131,17 @@ public class FirstRatings {
                 .collect(Collectors.toSet());
     }
 
-    private List<Double> getRatingsForMovie(Set<Rater> raters, String movieId) {
+    public List<Double> getRatingsForMovie(Set<Rater> raters, long movieId) {
         return raters.stream()
                 .filter(rater -> rater.getRating(movieId) != -1)
                 .map(rater -> rater.getRating(movieId))
                 .collect(Collectors.toList());
     }
 
-    private Set<String> collectMoviesIdFromRaters(Set<Rater> raters) {
-        Set<String> movies = new HashSet<>();
+    private Set<Long> collectMoviesIdFromRaters(Set<Rater> raters) {
+        Set<Long> movies = new HashSet<>();
         for (Rater rater : raters) {
-            List<String> ratedMovies = rater.getItemsRated();
+            List<Long> ratedMovies = rater.getItemsRated();
             movies.addAll(ratedMovies);
         }
         return movies;
@@ -173,10 +173,10 @@ public class FirstRatings {
     }
 
     private Rater getRaterById(Set<Rater> raters, long id) {
-        for (Rater rater : raters)
-            if (rater.getID() == id)
-                return rater;
-        return null;
+        return raters.stream()
+                .filter(rater -> rater.getID() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     private int getMaxQuantityOfRatings(Set<Rater> raters) {

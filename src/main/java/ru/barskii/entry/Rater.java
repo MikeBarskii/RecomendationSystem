@@ -2,6 +2,7 @@ package ru.barskii.entry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Rater {
     private long myID;
@@ -12,28 +13,24 @@ public class Rater {
         myRatings = new ArrayList<>();
     }
 
-    public void addRating(String item, double rating) {
-        myRatings.add(new Rating(item, rating));
+    public void addRating(long movie, double rating) {
+        myRatings.add(new Rating(movie, rating));
     }
 
-    public boolean hasRating(String item) {
-        for (Rating myRating : myRatings) {
-            if (myRating.getItem().equals(item)) {
-                return true;
-            }
-        }
-
-        return false;
+    public boolean hasRating(long movieId) {
+        return myRatings.stream()
+                .map(Rating::getMovie)
+                .anyMatch(movie -> movie == movieId);
     }
 
     public long getID() {
         return myID;
     }
 
-    public double getRating(String item) {
+    public double getRating(long movieId) {
         for (Rating myRating : myRatings) {
-            if (myRating.getItem().equals(item)) {
-                return myRating.getValue();
+            if (myRating.getMovie() == movieId) {
+                return myRating.getRating();
             }
         }
 
@@ -44,12 +41,9 @@ public class Rater {
         return myRatings.size();
     }
 
-    public List<String> getItemsRated() {
-        List<String> list = new ArrayList<>();
-        for (Rating myRating : myRatings) {
-            list.add(myRating.getItem());
-        }
-
-        return list;
+    public List<Long> getItemsRated() {
+        return myRatings.stream()
+                .map(Rating::getMovie)
+                .collect(Collectors.toList());
     }
 }

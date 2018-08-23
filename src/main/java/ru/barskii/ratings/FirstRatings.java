@@ -1,8 +1,9 @@
-package ru.barskii;
+package ru.barskii.ratings;
 
 import edu.duke.FileResource;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import ru.barskii.entry.EfficientRater;
 import ru.barskii.entry.Movie;
 import ru.barskii.entry.Rater;
 
@@ -70,7 +71,7 @@ public class FirstRatings {
         System.out.println("Total number of raters: " + raters.size());
 
         Rater rater = getRaterById(raters, raterId);
-        System.out.println("Rater with id " + raterId + ": " + rater);
+        System.out.println("PlainRater with id " + raterId + ": " + rater);
     }
 
     public void testLoadMovies(String filename) {
@@ -103,7 +104,7 @@ public class FirstRatings {
             long raterId = Long.parseLong(record.get("rater_id"));
             Rater rater = getRaterById(raters, raterId);
             if (rater == null) {
-                rater = new Rater(raterId);
+                rater = new EfficientRater(raterId);
                 raters.add(rater);
             }
 

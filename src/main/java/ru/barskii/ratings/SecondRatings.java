@@ -1,4 +1,4 @@
-package ru.barskii;
+package ru.barskii.ratings;
 
 import ru.barskii.entry.Movie;
 import ru.barskii.entry.Rater;

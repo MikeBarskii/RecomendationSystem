@@ -1,7 +1,7 @@
 package ru.barskii;
 
 import ru.barskii.entry.Rating;
-import ru.barskii.ratings.SecondRatings;
+import ru.barskii.rating.SecondRatings;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;

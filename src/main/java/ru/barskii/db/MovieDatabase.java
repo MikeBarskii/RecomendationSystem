@@ -1,28 +1,27 @@
 package ru.barskii.db;
 
 import ru.barskii.entry.Movie;
-import ru.barskii.filters.Filter;
-import ru.barskii.ratings.FirstRatings;
+import ru.barskii.filter.Filter;
+import ru.barskii.rating.FirstRatings;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 public class MovieDatabase {
     private static HashMap<Long, Movie> ourMovies;
 
-    public static void initialize(String moviefile) {
+    public static void initialize(String movieFile) {
         if (ourMovies == null) {
-            ourMovies = new HashMap<Long, Movie>();
-            loadMovies("data/" + moviefile);
+            ourMovies = new HashMap<>();
+            loadMovies(movieFile);
         }
     }
 
     private static void initialize() {
         if (ourMovies == null) {
-            ourMovies = new HashMap<Long, Movie>();
-            loadMovies("data/ratedmoviesfull.csv");
+            ourMovies = new HashMap<>();
+            loadMovies("ratedmovies_short.csv");
         }
     }
 
@@ -83,16 +82,21 @@ public class MovieDatabase {
         return ourMovies.size();
     }
 
-    public static List<Long> filterBy(Filter f) {
+    public static Set<Long> filterBy(Filter f) {
         initialize();
-        List<Long> list = new ArrayList<>();
+        Set<Long> moviesAfterFilter = new HashSet<>();
         for (long id : ourMovies.keySet()) {
             if (f.satisfies(id)) {
-                list.add(id);
+                moviesAfterFilter.add(id);
             }
         }
 
-        return list;
+        return moviesAfterFilter;
+    }
+
+    public static Set<Long> getMovies() {
+        initialize();
+        return ourMovies.keySet();
     }
 
 }

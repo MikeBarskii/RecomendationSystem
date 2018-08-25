@@ -1,4 +1,4 @@
-package ru.barskii.ratings;
+package ru.barskii.rating;
 
 import ru.barskii.entry.Movie;
 import ru.barskii.entry.Rater;
@@ -8,6 +8,7 @@ import ru.barskii.exception.MovieWasNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SecondRatings {
     private Set<Movie> movies;
@@ -57,7 +58,7 @@ public class SecondRatings {
         FirstRatings firstRatings = new FirstRatings();
         List<Double> ratings = firstRatings.getRatingsForMovie(raters, movieId);
         if (ratings.size() >= minRaters)
-            return ratings.stream().mapToDouble(i -> i).sum() / ratings.size();
+            return ratings.stream().collect(Collectors.averagingDouble(i -> i));
         return 0.0;
     }
 }

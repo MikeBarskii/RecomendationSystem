@@ -1,4 +1,4 @@
-package ru.barskii.ratings;
+package ru.barskii.rating;
 
 import edu.duke.FileResource;
 import org.apache.commons.csv.CSVParser;
@@ -12,85 +12,12 @@ import java.util.stream.Collectors;
 
 public class FirstRatings {
 
-    public void testGetMaxWorkingRaters(String filename) {
-        Set<Rater> raters = loadRaters(filename);
-        System.out.println("Total number of raters: " + raters.size());
-
-        Set<Rater> popularRaters = getRatersWithMaxRatings(raters);
-        System.out.println("Raters with maximum ratings: " + popularRaters);
-    }
-
-    public void testGetMoviesByRaters(String filename) {
-        Set<Rater> raters = loadRaters(filename);
-        System.out.println("Total number of raters: " + raters.size());
-
-        Set<Long> movies = collectMoviesIdFromRaters(raters);
-        System.out.println("Movie Ids with ratings: " + movies);
-    }
-
-    public void testGetRatingsByMovieId(String filename, long movieId) {
-        Set<Rater> raters = loadRaters(filename);
-        System.out.println("Total number of raters: " + raters.size());
-
-        List<Double> ratings = getRatingsForMovie(raters, movieId);
-        System.out.println("Ratings for film " + movieId + ": " + ratings);
-    }
-
-    public void testCollectDirectorAndTheirFilms(String filename) {
-        Set<Movie> movies = loadMovies(filename);
-        System.out.println("Total number of movies: " + movies.size());
-
-        Map<String, Set<String>> directorAndTheirFilms = collectDirectorAndTheirFilms(movies);
-        System.out.println(directorAndTheirFilms.toString());
-
-        int maxMoviesByOneDirector = getMaxMoviesByOneDirector(directorAndTheirFilms);
-        System.out.println("Max movies by one director: " + maxMoviesByOneDirector);
-
-        Set<String> nameOfDirectorsWithMaxMoviesQuantity = getNameOfDirectorsWithMoviesQuantity(directorAndTheirFilms, maxMoviesByOneDirector);
-        System.out.println(nameOfDirectorsWithMaxMoviesQuantity.toString());
-    }
-
-    public void testSortMoviesByGenre(String filename, String genre) {
-        Set<Movie> movies = loadMovies(filename);
-        System.out.println("Total number of movies: " + movies.size());
-
-        Set<Movie> moviesAfterSort = sortMoviesByGenre(movies, genre);
-        System.out.println("Total number of movies by genre " + genre + ": " + moviesAfterSort.size());
-    }
-
-    public void testSortMoviesByLongerRuntime(String filename, int length) {
-        Set<Movie> movies = loadMovies(filename);
-        System.out.println("Total number of movies: " + movies.size());
-
-        Set<Movie> moviesAfterSort = sortMoviesByLongerRuntime(movies, length);
-        System.out.println("Total number of movies longer than " + length + " minutes: " + moviesAfterSort.size());
-    }
-
-    public void testGetRaterById(String filename, long raterId) {
-        Set<Rater> raters = loadRaters(filename);
-        System.out.println("Total number of raters: " + raters.size());
-
-        Rater rater = getRaterById(raters, raterId);
-        System.out.println("PlainRater with id " + raterId + ": " + rater);
-    }
-
-    public void testLoadMovies(String filename) {
-        Set<Movie> movies = loadMovies(filename);
-        System.out.println("Total number of movies: " + movies.size());
-    }
-
-    public void testLoadRaters(String filename) {
-        Set<Rater> raters = loadRaters(filename);
-        System.out.println("Total number of raters: " + raters.size());
-    }
-
     public Set<Movie> loadMovies(String filename) {
         CSVParser csvParser = getCsvParser(filename);
 
         Set<Movie> movies = new HashSet<>();
         for (CSVRecord record : csvParser) {
-            Movie movie = new Movie(Long.parseLong(record.get("id")), record.get("title"), record.get("year"), record.get("genre"), record.get("director"),
-                    record.get("country"), record.get("poster"), Integer.parseInt(record.get("minutes")));
+            Movie movie = getMovieFromCsvRecord(record);
             movies.add(movie);
         }
         return movies;
@@ -132,13 +59,6 @@ public class FirstRatings {
                 .collect(Collectors.toSet());
     }
 
-    public List<Double> getRatingsForMovie(Set<Rater> raters, long movieId) {
-        return raters.stream()
-                .filter(rater -> rater.getRating(movieId) != -1)
-                .map(rater -> rater.getRating(movieId))
-                .collect(Collectors.toList());
-    }
-
     private Set<Long> collectMoviesIdFromRaters(Set<Rater> raters) {
         Set<Long> movies = new HashSet<>();
         for (Rater rater : raters) {
@@ -146,6 +66,13 @@ public class FirstRatings {
             movies.addAll(ratedMovies);
         }
         return movies;
+    }
+
+    public List<Double> getRatingsForMovie(Set<Rater> raters, long movieId) {
+        return raters.stream()
+                .filter(rater -> rater.hasRating(movieId))
+                .map(rater -> rater.getRating(movieId))
+                .collect(Collectors.toList());
     }
 
     private Map<String, Set<String>> collectDirectorAndTheirFilms(Set<Movie> movies) {
@@ -194,6 +121,12 @@ public class FirstRatings {
         if (directorAndFilms.containsKey(director))
             directorAndFilms.get(director).add(movieTitle);
         else directorAndFilms.put(director, new HashSet<>(Collections.singletonList(movieTitle)));
+    }
+
+    private Movie getMovieFromCsvRecord(CSVRecord record) {
+        return new Movie(Long.parseLong(record.get("id")), record.get("title"),
+                record.get("year"), record.get("genre"), record.get("director"),
+                record.get("country"), record.get("poster"), Integer.parseInt(record.get("minutes")));
     }
 
     private CSVParser getCsvParser(String filename) {

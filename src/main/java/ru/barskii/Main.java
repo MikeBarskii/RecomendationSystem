@@ -1,9 +1,12 @@
 package ru.barskii;
 
+import ru.barskii.db.MovieDatabase;
+
 public class Main {
 
     public static void main(String[] args) {
-        MovieRunnerAverage movieRunner = new MovieRunnerAverage();
-        movieRunner.printAverageRatings("ratedmoviesfull.csv", "ratings.csv", 50);
+        MovieRunnerWithFilters movieRunner = new MovieRunnerWithFilters();
+        MovieDatabase.initialize("ratedmoviesfull.csv");
+        movieRunner.printAverageRatings("ratings.csv", 4);
     }
 }

@@ -1,4 +1,4 @@
-package ru.barskii.filters;
+package ru.barskii.filter;
 
 import ru.barskii.db.MovieDatabase;
 

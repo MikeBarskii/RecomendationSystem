@@ -1,6 +1,7 @@
 package ru.barskii.rating;
 
 import ru.barskii.db.MovieDatabase;
+import ru.barskii.db.RaterDatabase;
 import ru.barskii.entry.Rater;
 import ru.barskii.entry.Rating;
 import ru.barskii.filter.*;
@@ -115,7 +116,7 @@ public class ThirdRatings {
     }
 
     private List<Double> getRatingsForMovie(long movieId) {
-        return new FirstRatings().getRatingsForMovie(raters, movieId);
+        return new FirstRatings().getRatingsForMovie(RaterDatabase.getRaters(), movieId);
     }
 
     private double getAverageValueFromList(List<Double> numbers) {

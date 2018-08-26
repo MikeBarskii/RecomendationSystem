@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface Rater {
 
-    void addRating(long movie, double rating);
+    void addRating(long movieId, double rating);
 
     boolean hasRating(long movieId);
 
